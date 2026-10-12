@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I wish… — интерактивный урок</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#faf7f0;--card:#fff;--ink:#1d2b3a;--mut:#667;--line:#d9d3c6;--now:#8aa593;--past:#6d90a8;--ann:#c9775d;--ok:#2f8f5b;--bad:#c0392b;--soft:#eef2ee}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a2028;--card:#232c36;--ink:#eae6dc;--mut:#a3abb3;--line:#38434f;--soft:#2a343f}}
+:root[data-theme="dark"]{--bg:#1a2028;--card:#232c36;--ink:#eae6dc;--mut:#a3abb3;--line:#38434f;--soft:#2a343f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,'Times New Roman',serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:10px 0 8px;z-index:5}
+h1{font-size:20px;margin:0 0 8px}
+.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--now),var(--past),var(--ann));transition:width .4s}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-top:4px}
+.dots{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.dots button{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.dots button.cur{border-color:var(--past);box-shadow:0 0 0 2px var(--past)}
+.dots button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+h2{margin:0 0 6px;font-size:24px}
+h3{margin:14px 0 6px;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.lead{color:var(--mut);margin:0 0 8px}
+.it{padding:10px 0;border-top:1px dashed var(--line)}
+.it:first-of-type{border-top:0}
+.it p{margin:0 0 6px}
+input[type=text],textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;max-width:100%}
+input[type=text]{min-width:150px;width:min(100%,260px)}
+input.long{width:100%}
+select{min-width:140px}
+.it.ok{border-left:4px solid var(--ok);padding-left:10px}
+.it.bad{border-left:4px solid var(--bad);padding-left:10px}
+.fb{display:block;font-size:14px;margin-top:4px}
+.ok .fb{color:var(--ok)}.bad .fb{color:var(--bad)}
+.tag{display:inline-block;padding:1px 10px;border-radius:8px;color:#fff;font-size:13px;font-family:system-ui,sans-serif;margin-right:6px}
+.t-now{background:var(--now)}.t-past{background:var(--past)}.t-ann{background:var(--ann)}
+.g{border-radius:10px;padding:10px 12px;margin:8px 0;border-left:8px solid}
+.g.n{border-color:var(--now);background:color-mix(in srgb,var(--now) 14%,transparent)}
+.g.p{border-color:var(--past);background:color-mix(in srgb,var(--past) 14%,transparent)}
+.g.a{border-color:var(--ann);background:color-mix(in srgb,var(--ann) 14%,transparent)}
+.g b{display:block}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:14px}
+.chips div{padding:4px 6px;border:1px solid var(--line);border-radius:8px;text-align:center;background:var(--soft)}
+.chips .h{font-weight:bold;color:#fff;border:0}
+.chips .h:nth-child(1){background:var(--now)}.chips .h:nth-child(2){background:var(--past)}.chips .h:nth-child(3){background:var(--ann)}
+.msg{background:var(--soft);border-radius:10px;padding:8px 10px;margin-bottom:4px}
+.nav{display:flex;gap:8px;justify-content:space-between;margin:14px 0 40px;flex-wrap:wrap}
+.btn{font:inherit;font-family:system-ui,sans-serif;font-size:15px;border:0;border-radius:10px;padding:10px 18px;cursor:pointer;background:var(--past);color:#fff}
+.btn.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.go{background:var(--ok)}
+.btn:disabled{opacity:.4;cursor:default}
+.score{font-weight:bold;margin-top:8px}
+.big{font-size:44px;text-align:center;margin:6px 0}
+table{width:100%;border-collapse:collapse}td{padding:6px;border-bottom:1px solid var(--line)}
+label.c{display:block;margin:4px 0}
+body{background:linear-gradient(180deg,var(--bg),color-mix(in srgb,#f3a6b8 22%,var(--bg)));background-attachment:fixed;min-height:100vh}
+#hearts{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.top h1{margin:0}
+.fs{font:inherit;font-family:system-ui,sans-serif;font-size:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.fs:hover{border-color:var(--past)}
+.wrap{position:relative;z-index:1}
+.h{position:absolute;bottom:-50px;opacity:0;animation:rise linear infinite;filter:drop-shadow(0 2px 4px rgba(200,80,110,.25))}
+@keyframes rise{0%{transform:translate(0,0) rotate(-12deg) scale(.8);opacity:0}12%{opacity:.7}50%{transform:translate(24px,-55vh) rotate(12deg) scale(1)}100%{transform:translate(-18px,-115vh) rotate(-12deg) scale(1.15);opacity:0}}
+@media (prefers-reduced-motion:reduce){.h{animation:none;opacity:.25;bottom:auto}}
+</style>
+</head>
+<body>
+<div id="hearts" aria-hidden="true"></div>
+<div class="wrap">
+<header>
+<div class="top"><h1>I wish… · интерактивный урок</h1><button class="fs" id="fs" type="button">⛶ На весь экран</button></div>
+<div class="bar"><i id="pb"></i></div>
+<div class="meta"><span id="pt">Пройдено 0 из 7</span><span id="sc"></span></div>
+<div class="dots" id="dots"></div>
+</header>
+<main id="main"></main>
+<div class="nav"><button class="btn sec" id="prev">← Назад</button><button class="btn" id="check">Проверить</button><button class="btn sec" id="next">Дальше →</button></div>
+</div>
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const mk=h=>{const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild};
+const norm=s=>s.toLowerCase().replace(/[’`]/g,"'").replace(/\bhad not\b/g,"hadn't").replace(/\bwould not\b/g,"wouldn't").replace(/\bcould not\b/g,"couldn't").replace(/[.!]+$/,'').replace(/\s+/g,' ').trim();
+const PASTRE=/\bhadn'?t\b|\bhad (not )?\w+(ed|en|ne|ought|aught|ft|ent|ept|ad|ot|own|ung|ade|aid|old)\b/;
+const TAG={now:['NOW','t-now'],past:['PAST','t-past'],ann:['ANNOYANCE','t-ann']};
+const CATS=['NOW','PAST','ANNOYANCE'];
+function mark(el,ok,msg){el.classList.remove('ok','bad');el.classList.add(ok?'ok':'bad');$('.fb',el).textContent=msg}
+function catSel(){return `<select class="cat"><option value="">NOW / PAST / ANNOYANCE?</option>${CATS.map(c=>`<option>${c}</option>`).join('')}</select>`}
+
+/* item builders: return {el, check()->[got,total]} */
+const html=h=>({el:mk(`<div>${h}</div>`),check:()=>[0,0]});
+function sel(q,opts,a){const el=mk(`<div class="it"><p>${q}</p><select><option value="">— выбери —</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select><span class="fb"></span></div>`);
+ return{el,check(){const v=$('select',el).value,ok=v===a;mark(el,ok,!v?'Выбери ответ':ok?'Верно ✓':'Не совсем. Правильно: '+a);return[ok?1:0,1]}}}
+function txt(q,pre,post,a,cat){const el=mk(`<div class="it"><p>${q}</p><p>${pre} <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false"> ${post}</p>${cat?`<p>${catSel()}</p>`:''}<span class="fb"></span></div>`);
+ return{el,check(){const v=norm($('input',el).value),ok=a[0]==='*'?v.length>=3:a.some(x=>norm(x)===v);let g=ok?1:0,t=1,m=ok?'Форма верна ✓':(a[0]==='*'?'Допиши просьбу':'Правильно: '+a[0]);
+  if(cat){t=2;const c=$('.cat',el).value;if(c===cat)g++;else m+=' · тип: '+cat}
+  mark(el,g===t,m);return[g,t]}}}
+function wish(type,ctx){const[l,c]=TAG[type];const el=mk(`<div class="it"><p><span class="tag ${c}">${l}</span>${ctx||''}</p><p>I wish <input type="text" class="long" autocomplete="off" spellcheck="false"></p><span class="fb"></span></div>`);
+ return{el,check(){const v=norm($('input',el).value),f='i wish '+v;let ok=false,h='';
+  if(v.length<3){mark(el,false,'Напиши желание');return[0,1]}
+  if(type==='now'){ok=!/would/.test(f)&&!PASTRE.test(f);h='Нужен Past Simple: I wish I lived… / I wish I had…'}
+  if(type==='past'){ok=PASTRE.test(f)&&!/would/.test(f);h='Нужен Past Perfect: I wish I hadn’t bought… / had + V3'}
+  if(type==='ann'){ok=/\bwould(n'?t)?\s+\w+/.test(f);h='Нужно would / wouldn’t + глагол: I wish he would stop…'}
+  mark(el,ok,ok?'Хорошо, форма подходит ✓':h);return[ok?1:0,1]}}}
+function free(label,ph){const el=mk(`<div class="it"><p>${label}</p><input type="text" class="long" placeholder="${ph||''}" autocomplete="off"><span class="fb"></span></div>`);
+ return{el,check(){const ok=$('input',el).value.trim().length>=3;mark(el,ok,ok?'Записано ✓':'Заполни поле');return[ok?1:0,1]}}}
+function chk(labels){const el=mk(`<div class="it">${labels.map(l=>`<label class="c"><input type="checkbox"> ${l}</label>`).join('')}<span class="fb"></span></div>`);
+ return{el,check(){const n=el.querySelectorAll('input:checked').length,ok=n===labels.length;mark(el,ok,ok?'Отлично ✓':'Отметь всё, что умеешь — или вернись к шагам выше');return[n,labels.length]}}}
+
+const STEPS=[
+{t:'1 · Change three things',lead:'Warm-up. Выбери по одной теме из каждой колонки и расскажи о ней.',items:[
+ html(`<div class="chips"><div class="h">MY LIFE NOW</div><div class="h">MY PAST</div><div class="h">THINGS THAT ANNOY ME</div>
+ <div>free time</div><div>learning English at school</div><div>loud phone calls</div><div>work</div><div>a purchase</div><div>late replies</div>
+ <div>home</div><div>a missed opportunity</div><div>housework</div><div>skills</div><div>a holiday</div><div>noisy neighbours</div></div>
+ <h3>Questions</h3><ul><li>What would you like to change in your life?</li><li>Is there something you regret?</li><li>What do people do that annoys you?</li></ul>
+ <p class="lead">Useful language: I’d like to change… · I regret… · It annoys me when…</p><h3>My ideas</h3>`),
+ free('Now:','напр. I’d like to change my work schedule'),free('Past:','напр. I regret not learning English at school'),free('Annoyance:','напр. It annoys me when people make loud phone calls')]},
+{t:'2 · Anna’s bad day',lead:'Read Anna’s messages. Match each message to NOW, PAST or ANNOYANCE.',items:[
+ html(`<div class="msg"><b>A.</b> I’m at work again this Saturday. I don’t have enough free time. <i>I wish I had more time for myself.</i></div>`),sel('Category A',CATS,'NOW'),
+ html(`<div class="msg"><b>B.</b> I saw a great job advert last month, but I didn’t apply. Now it’s too late. <i>I wish I had applied for that job.</i></div>`),sel('Category B',CATS,'PAST'),
+ html(`<div class="msg"><b>C.</b> My colleague keeps interrupting me. It’s really annoying! <i>I wish he would stop interrupting me.</i></div>`),sel('Category C',CATS,'ANNOYANCE'),
+ html('<h3>Check your understanding</h3>'),
+ sel('Does Anna have enough free time?',['Yes, she does.','No, she doesn’t.'],'No, she doesn’t.'),
+ sel('Did she apply for the job?',['Yes, she did.','No, she didn’t.'],'No, she didn’t.'),
+ sel('What does she want her colleague to change?',['He should stop interrupting her.','He should arrive earlier.','He should call her more.'],'He should stop interrupting her.'),
+ html('<h3>Notice the language</h3>'),
+ sel('What is different about the three verb forms after “I wish”?',['Past Simple · Past Perfect · would + base verb','All three are Present Simple','All three use will'],'Past Simple · Past Perfect · would + base verb')]},
+{t:'3 · When is the problem?',lead:'Grammar guide. Прочитай и сделай Quick check.',items:[
+ html(`<div class="g n"><b>NOW — I wish + Past Simple</b>I wish I <u>lived</u> closer to work. <small>(Reality: I live far from work.)</small></div>
+ <div class="g p"><b>PAST — I wish + Past Perfect</b>I wish I <u>hadn’t bought</u> this phone. <small>(Reality: I bought it.)</small></div>
+ <div class="g a"><b>ANNOYANCE — I wish + would / wouldn’t + base verb</b>I wish people <u>wouldn’t talk</u> so loudly. <small>(Reality: they keep talking loudly.)</small></div>
+ <h3>Remember</h3><ul><li>Past Simple after “wish” refers to the present.</li><li>With “be”: I wish I <b>were</b>… (“was” is also common in conversation).</li><li>Ability: I wish I <b>could</b> drive.</li><li>Use “would” for a change you want from someone.</li></ul><h3>Quick check</h3>`),
+ sel('1. I wish I had a garden.',CATS,'NOW'),sel('2. I wish I had called her yesterday.',CATS,'PAST'),sel('3. I wish you wouldn’t interrupt me.',CATS,'ANNOYANCE')]},
+{t:'4 · Choose the right wish',lead:'Complete the sentences with the correct form of the verbs, then say if each wish is about NOW, the PAST or ANNOYANCE.',items:[
+ txt('I don’t have a quiet place to work.','I wish I','a quiet place. (have)',['had'],'NOW'),
+ txt('I paid too much for this bag.','I wish I','it. (not buy)',["hadn't bought"],'PAST'),
+ txt('My neighbour plays loud music every night.','I wish he','the music down. (turn)',['would turn',"'d turn"],'ANNOYANCE'),
+ txt('I can’t speak Spanish.','I wish I','Spanish. (can speak)',['could speak'],'NOW'),
+ txt('I went to bed late and felt terrible in the morning.','I wish I','to bed earlier. (go)',['had gone'],'PAST'),
+ txt('You keep leaving dirty cups on my desk.','I wish you','them there. (not leave)',["wouldn't leave"],'ANNOYANCE'),
+ html('<h3>Make it personal</h3>'),free('Write one true sentence with “I wish”.','I wish …')]},
+{t:'5 · One situation, three wishes',lead:'Write three different wishes: I wish + Past Simple / Past Perfect / would.',items:[
+ html('<h3>A holiday gone wrong</h3><ul><li>Your hotel room is very small.</li><li>You didn’t read the reviews before booking.</li><li>The guests next door keep making noise at night.</li></ul>'),
+ wish('now'),wish('past'),wish('ann'),
+ html('<h3>Trouble at work</h3><ul><li>You live far from the office.</li><li>You refused a job near your home last year.</li><li>Your manager keeps sending messages late at night.</li></ul>'),
+ wish('now'),wish('past'),wish('ann'),
+ html('<h3>Take action</h3>'),free('Choose one situation. What can you do about it? I can…','I can …')]},
+{t:'6 · We need to talk',lead:'Role play: choose a situation (Neighbours · Sharing a home · Colleagues). Your teacher is the other person.',items:[
+ html(`<div class="g n"><b>Neighbours</b>loud music; rubbish outside the door</div><div class="g p"><b>Sharing a home</b>dirty dishes; phones at dinner</div><div class="g a"><b>Colleagues</b>interruptions; late arrivals to meetings</div>
+ <p><i>Model — colleagues:</i> I wish our office were quieter. · I wish I hadn’t agreed to share this room. · I wish you wouldn’t make personal calls here.</p><h3>Prepare three wishes</h3>`),
+ wish('now','A present situation you want to change'),wish('past','A past decision you regret'),wish('ann','Behaviour you want the other person to change'),
+ html('<h3>Let’s find a solution</h3><p class="lead">“I wish you would…” can sound critical. Make a polite request: “Could you …, please?”</p>'),
+ txt('Turn your last wish into a polite request.','Could you',', please?',['*'],null),
+ html('<p class="lead">Useful replies: I’m sorry. I’ll… · I understand, but… · Let’s…</p>'),free('Our agreement: We will …','We will …')]},
+{t:'7 · My three wishes',lead:'Think about your warm-up ideas. Write true or imaginary wishes — and finish with the Wish Diary.',items:[
+ html('<h3>Wish diary — two NOW, two PAST, two ANNOYANCE</h3><div class="g p">Example: I spent too much money last weekend. I wish I hadn’t bought those shoes.</div>'),
+ wish('now'),wish('now'),wish('past'),wish('past'),wish('ann'),wish('ann'),
+ html('<h3>Self-check</h3>'),chk(['I can talk about wishes for the present.','I can express regrets about the past.','I can ask for a change with “wish + would”.'])]}
+];
+/* '*' answer = any non-empty */
+const _norm=norm;
+STEPS[5].items.forEach(i=>{});
+
+const res=[];let cur=0;
+const main=$('#main'),dots=$('#dots');
+const built=STEPS.map(s=>s.items);
+function show(i){cur=i;main.innerHTML='';
+ if(i===STEPS.length){return results()}
+ const s=STEPS[i];const c=mk(`<section class="card"><h2>${s.t}</h2><p class="lead">${s.lead}</p><div class="box"></div><div class="score" id="stsc"></div></section>`);
+ built[i].forEach(b=>$('.box',c).appendChild(b.el));main.appendChild(c);
+ if(res[i])$('#stsc').textContent=`Результат шага: ${res[i][0]} из ${res[i][1]}`;
+ ui();scrollTo(0,0)}
+function ui(){const done=res.filter(Boolean).length;
+ $('#pb').style.width=(done/STEPS.length*100)+'%';$('#pt').textContent=`Пройдено ${done} из ${STEPS.length}`;
+ const g=res.reduce((a,r)=>a+(r?r[0]:0),0),t=res.reduce((a,r)=>a+(r?r[1]:0),0);$('#sc').textContent=t?`Баллы: ${g}/${t}`:'';
+ dots.innerHTML='';STEPS.forEach((s,i)=>{const b=document.createElement('button');b.textContent=i+1;b.className=(i===cur?'cur ':'')+(res[i]?'done':'');b.onclick=()=>show(i);dots.appendChild(b)});
+ $('#prev').disabled=cur===0;$('#check').style.display=cur===STEPS.length?'none':'';
+ $('#next').textContent=cur===STEPS.length-1?'Итоги →':'Дальше →';$('#next').style.display=cur===STEPS.length?'none':''}
+function check(){let g=0,t=0;built[cur].forEach(b=>{const r=b.check();g+=r[0];t+=r[1]});
+ res[cur]=[g,t];$('#stsc').textContent=`Результат шага: ${g} из ${t}`+(g===t?' — отлично! 🎉':' — исправь красные и проверь ещё раз');
+ ui();if(g===t)$('#next').className='btn go'}
+function results(){const g=res.reduce((a,r)=>a+(r?r[0]:0),0),t=res.reduce((a,r)=>a+(r?r[1]:0),0),p=t?Math.round(g/t*100):0;
+ const rows=STEPS.map((s,i)=>`<tr><td>${s.t}</td><td>${res[i]?res[i][0]+' / '+res[i][1]:'не проверен'}</td></tr>`).join('');
+ main.appendChild(mk(`<section class="card"><div class="big">${p>=80?'🏆':p>=50?'👍':'📘'}</div><h2 style="text-align:center">${p}% · ${g} из ${t}</h2><table>${rows}</table><p style="text-align:center"><button class="btn" id="again">Пройти заново</button></p></section>`));
+ $('#again').onclick=()=>location.reload();ui()}
+$('#check').onclick=check;
+$('#prev').onclick=()=>{if(cur>0)show(cur-1)};
+$('#next').onclick=()=>{$('#next').className='btn sec';show(cur+1)};
+show(0);
+(function(){const b=$('#fs'),d=document,el=d.documentElement,
+ req=el.requestFullscreen||el.webkitRequestFullscreen,ex=d.exitFullscreen||d.webkitExitFullscreen,
+ on=()=>d.fullscreenElement||d.webkitFullscreenElement,
+ sync=()=>{b.textContent=on()?'✕ Выйти из полного экрана':'⛶ На весь экран'};
+ if(!req){b.style.display='none'}
+ b.onclick=()=>{try{const p=on()?ex.call(d):req.call(el);if(p&&p.catch)p.catch(()=>{b.textContent='Недоступно в этом окне'})}catch(e){b.textContent='Недоступно в этом окне'}};
+ d.addEventListener('fullscreenchange',sync);d.addEventListener('webkitfullscreenchange',sync);
+ d.addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F')&&!/INPUT|TEXTAREA|SELECT/.test((e.target.tagName||'')))b.click()})})();
+(function(){const box=$('#hearts'),E=['💗','💖','💕','🩷','❤️','🌸','💞'];
+ for(let i=0;i<24;i++){const h=document.createElement('span');h.className='h';h.textContent=E[i%E.length];
+  h.style.left=(Math.random()*96)+'%';h.style.fontSize=(14+Math.random()*22)+'px';
+  h.style.animationDuration=(9+Math.random()*10)+'s';h.style.animationDelay=(-Math.random()*18)+'s';
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)h.style.top=(Math.random()*90)+'%';
+  box.appendChild(h)}})();
+</script>
+</body>
+</html>
